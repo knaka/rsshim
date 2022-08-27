@@ -28,6 +28,7 @@ fn main() {
             SubCommand::Install(_) => rsshim_env::update_env(),
             SubCommand::Reinstall(_) => rsshim_env::update_env(),
         }
+        return;
     }
     rsshim_exec::exec_cached_bin();
     exit(1);
