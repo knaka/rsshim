@@ -22,13 +22,10 @@ pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bo
             .stderr(Stdio::piped())
             .arg("--verbose")
             .arg("build")
-            .arg("--target-dir")
-            .arg(&build_target_dir)
-            .arg("--bin")
-            .arg(&bin_name)
+            .arg("--target-dir").arg(&build_target_dir)
+            .arg("--bin").arg(&bin_name)
             .spawn()
-            .expect("Err 7c1a53f")
-        ;
+            .expect("Err 7c1a53f");
         let stdout = io::BufReader::new(process.stdout.take().unwrap());
         let handle_stdout = thread::spawn(move || {
             for line in stdout.lines() {
