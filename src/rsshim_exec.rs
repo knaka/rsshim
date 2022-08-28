@@ -4,7 +4,7 @@ use std::{env, fs, io, thread};
 use std::io::{BufRead, Write};
 use std::os::unix::prelude::CommandExt;
 
-pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bool, arg0: &Path, args: &[String]) -> () {
+pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bool, arg0: &Path, args: &[String], build_target_dir: Option<PathBuf>) -> () {
     // exec(2) してしまうと、flush() したところで println! や dbg! の出力がどこかへ行ってしまう。なんでだろう
     // dbg!(arg0);
     // println!("{:?}", &args);
@@ -12,8 +12,10 @@ pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bo
     let cached_bin = bin_cache_dir.join(&bin_name);
     let bin_source_dir = get_bin_source_dir(&prj_dir, &bin_name);
     if !cached_bin.exists() || crate::utils::newer_source_exists(&cached_bin, &bin_source_dir) {
-        // todo: target がテストのたびに生成されてしまうの直す
-        let build_target_dir = crate::utils::get_build_target_dir(&prj_dir);
+        let build_target_dir = match build_target_dir {
+            Some(build_target_dir) => build_target_dir,
+            None => crate::utils::get_build_target_dir(&prj_dir),
+        };
         let mut process = Command::new("cargo")
             .current_dir(&prj_dir)
             .stdout(Stdio::piped())
@@ -70,7 +72,7 @@ pub fn exec_cached_bin() {
     let args_rest: Vec<String> = args.collect();
     let prj_dir = crate::utils::get_prj_dir().unwrap();
     let prj_dir = prj_dir.as_path();
-    exec_cached_bin_sub(crate::utils::get_bin_cache_dir().as_path(), &prj_dir, true, arg0, args_rest.as_ref());
+    exec_cached_bin_sub(crate::utils::get_bin_cache_dir().as_path(), &prj_dir, true, arg0, args_rest.as_ref(), None);
     exit(1);
 }
 
