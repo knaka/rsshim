@@ -24,8 +24,16 @@ pub fn get_build_target_dir<P: AsRef<Path>>(prj_dir: P) -> PathBuf {
 }
 
 fn newer_source_exists_sub(bin_mtime: &FileTime, bin_source_dir: &Path) -> bool {
-    // dbg!(bin_source_dir);
-    for entry in bin_source_dir.read_dir().unwrap() {
+    let newer = |source_path: &Path| -> bool {
+        let metadata = fs::metadata(&source_path).unwrap();
+        let file_mtime = FileTime::from_last_modification_time(&metadata);
+        return file_mtime.gt(bin_mtime)
+    };
+    dbg!(bin_source_dir);
+    if bin_source_dir.is_file() {
+        return newer(&bin_source_dir)
+    }
+    for entry in bin_source_dir.read_dir().expect("Err 1784e27") {
         let entry = entry.unwrap();
         let path = entry.path();
         if path.is_dir() {
@@ -34,10 +42,8 @@ fn newer_source_exists_sub(bin_mtime: &FileTime, bin_source_dir: &Path) -> bool 
             }
         }
         if path.is_file() {
-            let metadata = fs::metadata(&path).unwrap();
-            let file_mtime = FileTime::from_last_modification_time(&metadata);
-            if file_mtime.gt(bin_mtime) {
-                return true;
+            if newer(&path) {
+                return true
             }
         }
     }

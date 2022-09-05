@@ -10,8 +10,8 @@ pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bo
     // println!("{:?}", &args);
     let bin_name = arg0.file_name().expect("None 0efbb78").to_str().expect("None 2574b81");
     let cached_bin = bin_cache_dir.join(&bin_name);
-    let bin_source_dir = get_bin_source_dir(&prj_dir, &bin_name);
-    if !cached_bin.exists() || crate::utils::newer_source_exists(&cached_bin, &bin_source_dir) {
+    let bin_source = get_bin_source_path(&prj_dir, &bin_name);
+    if !cached_bin.exists() || crate::utils::newer_source_exists(&cached_bin, &bin_source) {
         let build_target_dir = match build_target_dir {
             Some(build_target_dir) => build_target_dir,
             None => crate::utils::get_build_target_dir(&prj_dir),
@@ -73,8 +73,16 @@ pub fn exec_cached_bin() {
     exit(1);
 }
 
-fn get_bin_source_dir(prj_dir: &Path, bin_name: &str) -> PathBuf {
-    prj_dir.join(format!("src/{}", bin_name))
+fn get_bin_source_path(prj_dir: &Path, bin_name: &str) -> PathBuf {
+    let bin_source = prj_dir.join(format!("src/bin/{}", bin_name));
+    if bin_source.is_dir() {
+        return bin_source
+    }
+    let bin_source = prj_dir.join(format!("src/bin/{}.rs", bin_name));
+    if bin_source.is_file() {
+        return bin_source
+    }
+    panic!("Panic 5f7673f");
 }
 
 #[cfg(test)]
