@@ -2,12 +2,6 @@ use std::path::{Path, PathBuf};
 use std::fs;
 use filetime::FileTime;
 
-pub fn get_prj_dir() -> Option<PathBuf> {
-    let mut prj_dir = home::home_dir()?;
-    prj_dir.push("src/rs");
-    return Some(prj_dir);
-}
-
 pub fn get_rust_bin_dir() -> PathBuf {
     return home::home_dir().unwrap().join(".cargo/bin");
 }
