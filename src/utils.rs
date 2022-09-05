@@ -8,10 +8,6 @@ pub fn get_prj_dir() -> Option<PathBuf> {
     return Some(prj_dir);
 }
 
-pub fn extract_bin_name_from_path<P: AsRef<Path>>(path: P) -> String {
-    String::from(path.as_ref().iter().rev().nth(2).unwrap().to_str().unwrap())
-}
-
 pub fn get_rust_bin_dir() -> PathBuf {
     return home::home_dir().unwrap().join(".cargo/bin");
 }

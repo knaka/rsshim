@@ -25,8 +25,8 @@ fn main() {
     if called_as_rsshim_command() {
         let options = Options::parse();
         match options.command {
-            SubCommand::Install(_) => rsshim_env::update_env(),
-            SubCommand::Reinstall(_) => rsshim_env::update_env(),
+            SubCommand::Install(_) => rsshim_env::update_shims(),
+            SubCommand::Reinstall(_) => rsshim_env::update_shims(),
         }
         return;
     }
