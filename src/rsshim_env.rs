@@ -1,5 +1,6 @@
 use std::path::Path;
 use std::{env, fs};
+use crate::config::ProjectCluster;
 
 fn update_shims_sub<P: AsRef<Path>>(bin_dir: P, prj_dir: P) -> () {
     let mut bin_names = Vec::<String>::new();
@@ -28,11 +29,11 @@ fn update_shims_sub<P: AsRef<Path>>(bin_dir: P, prj_dir: P) -> () {
     }
 }
 
-pub fn update_shims() -> () {
+pub fn update_shims(project_cluster: &ProjectCluster) -> () {
     update_shims_sub(
         crate::utils::get_rust_bin_dir(),
-        crate::utils::get_prj_dir()
-            .expect("None ddfd19c"));
+        project_cluster.get_project_dir()
+    );
     return ();
 }
 

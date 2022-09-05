@@ -3,6 +3,7 @@ use std::process::{Command, exit, Stdio};
 use std::{env, fs, io, thread};
 use std::io::{BufRead, Write};
 use std::os::unix::prelude::CommandExt;
+use crate::config::ProjectCluster;
 
 pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bool, arg0: &Path, args: &[String], build_target_dir: Option<PathBuf>) -> () {
     // exec(2) してしまうと、flush() したところで println! や dbg! の出力がどこかへ行ってしまう。なんでだろう
@@ -62,12 +63,13 @@ pub fn exec_cached_bin_sub(bin_cache_dir: &Path, prj_dir: &Path, should_exec: bo
     }
 }
 
-pub fn exec_cached_bin() {
+pub fn exec_cached_bin(project_cluster: &ProjectCluster) {
     let mut args = env::args();
     let arg0 = args.next().unwrap();
     let arg0 = Path::new(&arg0);
     let args_rest: Vec<String> = args.collect();
-    let prj_dir = crate::utils::get_prj_dir().unwrap();
+    // let prj_dir = crate::utils::get_prj_dir().unwrap();
+    let prj_dir = project_cluster.get_project_dir();
     let prj_dir = prj_dir.as_path();
     exec_cached_bin_sub(crate::utils::get_bin_cache_dir().as_path(), &prj_dir, true, arg0, args_rest.as_ref(), None);
     exit(1);
